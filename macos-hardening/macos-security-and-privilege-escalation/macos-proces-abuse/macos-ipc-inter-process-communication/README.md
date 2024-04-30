@@ -442,7 +442,7 @@ gcc -framework Foundation -framework Appkit sc_inject.m -o sc_inject
 ./inject <pi or string>
 ````
 
-#### 通过任务端口在线程中进行Dylib注入
+**通过任务端口在线程中进行Dylib注入**
 
 在 macOS 中，**线程** 可能通过 **Mach** 或使用 **posix `pthread` api** 进行操作。我们在前面的注入中生成的线程是使用 Mach api 生成的，因此**不符合 posix 标准**。
 
@@ -452,7 +452,7 @@ gcc -framework Foundation -framework Appkit sc_inject.m -o sc_inject
 
 您可以在这里找到**示例 dylibs**（例如生成日志然后您可以监听它的 dylib）：
 
-#### macOS IPC (Inter-Process Communication)
+**macOS IPC (Inter-Process Communication)**
 
 Inter-Process Communication (IPC) mechanisms are essential for processes to communicate with each other. macOS provides various IPC mechanisms such as Mach ports, XPC services, and UNIX domain sockets. Understanding how these mechanisms work is crucial for both developers and security professionals to ensure secure communication between processes.
 
@@ -461,25 +461,25 @@ gcc -framework Foundation -framework Appkit dylib_injector.m -o dylib_injector
 ./inject <pid-of-mysleep> </path/to/lib.dylib>
 ```
 
-#### 通过任务端口进行线程劫持 <a href="#step-1-thread-hijacking" id="step-1-thread-hijacking"></a>
+**通过任务端口进行线程劫持**
 
 在这种技术中，进程的一个线程被劫持：
 
-### XPC
+#### XPC
 
-#### 基本信息
+**基本信息**
 
 XPC代表XNU（macOS使用的内核）进程间通信，是macOS和iOS上进程之间通信的框架。XPC提供了一种机制，用于在系统上不同进程之间进行安全的异步方法调用。这是苹果安全范式的一部分，允许创建特权分离的应用程序，其中每个组件仅以执行其工作所需的权限运行，从而限制受损进程可能造成的潜在损害。
 
 有关此通信工作方式及其可能存在的漏洞的更多信息，请查看：
 
-### MIG - Mach接口生成器
+#### MIG - Mach接口生成器
 
 MIG旨在简化Mach IPC代码创建过程。它基本上为服务器和客户端生成所需的通信代码。即使生成的代码很丑陋，开发人员只需导入它，他的代码将比以前简单得多。
 
 有关更多信息，请查看：
 
-### 参考资料
+#### 参考资料
 
 * [https://docs.darlinghq.org/internals/macos-specifics/mach-ports.html](https://docs.darlinghq.org/internals/macos-specifics/mach-ports.html)
 * [https://knight.sc/malware/2019/03/15/code-injection-on-macos.html](https://knight.sc/malware/2019/03/15/code-injection-on-macos.html)

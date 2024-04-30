@@ -253,7 +253,7 @@ sudo launchctl unload /Library/LaunchDaemons/xyz.hacktricks.service.plist
 sudo rm /Library/LaunchDaemons/xyz.hacktricks.service.plist /tmp/xpc_server
 ```
 
-### XPC 通信 Objective-C 代码示例
+#### XPC 通信 Objective-C 代码示例
 
 {% tabs %}
 {% tab title="oc_xpc_server.m" %}
@@ -359,19 +359,19 @@ return 0;
 
 \`\`\`bash # Compile the server & client gcc -framework Foundation oc\_xpc\_server.m -o oc\_xpc\_server gcc -framework Foundation oc\_xpc\_client.m -o oc\_xpc\_client
 
-## Save server on it's location
+### Save server on it's location
 
 cp oc\_xpc\_server /tmp
 
-## Load daemon
+### Load daemon
 
 sudo cp xyz.hacktricks.svcoc.plist /Library/LaunchDaemons sudo launchctl load /Library/LaunchDaemons/xyz.hacktricks.svcoc.plist
 
-## Call client
+### Call client
 
 ./oc\_xpc\_client
 
-## Clean
+### Clean
 
 sudo launchctl unload /Library/LaunchDaemons/xyz.hacktricks.svcoc.plist sudo rm /Library/LaunchDaemons/xyz.hacktricks.svcoc.plist /tmp/oc\_xpc\_server
 

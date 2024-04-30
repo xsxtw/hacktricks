@@ -3652,7 +3652,7 @@ volatility --profile=SomeLinux -f file.dmp linux_recover_filesystem #Dump the en
 {% endtab %}
 
 {% tab title="vol2" %}
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Commands**
 
@@ -3876,13 +3876,13 @@ volatility --profile=SomeLinux -f file.dmp linux_find_file -F /path/to/file
 volatility --profile=SomeLinux -f file.dmp linux_find_file -i 0xINODENUMBER -O /path/to/dump/file
 ```
 
-#### 主文件表
+**主文件表**
 
 ```bash
 # I couldn't find any plugin to extract this information in volatility3
 ```
 
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Commands**
 
@@ -4185,14 +4185,14 @@ volatility --profile=Win7SP1x86_23418 mftparser -f file.dmp
 
 **NTFS文件系统**使用一个关键组件，称为\_主文件表\_（MFT）。该表至少包含卷上每个文件的一个条目，也包括MFT本身。关于每个文件的重要细节，如**大小、时间戳、权限和实际数据**，都封装在MFT条目中或在MFT外部但由这些条目引用的区域中。更多详细信息可以在[官方文档](https://docs.microsoft.com/en-us/windows/win32/fileio/master-file-table)中找到。
 
-#### SSL密钥/证书
+**SSL密钥/证书**
 
 ```bash
 #vol3 allows to search for certificates inside the registry
 ./vol.py -f file.dmp windows.registry.certificates.Certificates
 ```
 
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Commands**
 
@@ -4467,7 +4467,7 @@ volatility --profile=Win7SP1x86_23418 mftparser -f file.dmp
 volatility --profile=Win7SP1x86_23418 dumpcerts --dump-dir=. -f file.dmp
 ```
 
-### 恶意软件
+#### 恶意软件
 
 ```bash
 ./vol.py -f file.dmp windows.malfind.Malfind [--dump] #Find hidden and injected code, [dump each suspicious section]
@@ -4483,7 +4483,7 @@ volatility --profile=Win7SP1x86_23418 dumpcerts --dump-dir=. -f file.dmp
 ./vol.py -f file.dmp linux.tty_check.tty_check #Checks tty devices for hooks
 ```
 
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Commands**
 
@@ -4758,7 +4758,7 @@ volatility --profile=SomeLinux -f file.dmp linux_check_tty
 volatility --profile=SomeLinux -f file.dmp linux_keyboard_notifiers #Keyloggers
 ```
 
-#### 使用yara进行扫描
+**使用yara进行扫描**
 
 使用此脚本从github下载并合并所有yara恶意软件规则：[https://gist.github.com/andreafortuna/29c6ea48adf3d45a979a78763cdc7ce9](https://gist.github.com/andreafortuna/29c6ea48adf3d45a979a78763cdc7ce9)\
 创建名为\_**rules**_的目录并执行该脚本。这将创建一个名为_**malware\_rules.yar**\_的文件，其中包含所有恶意软件的yara规则。
@@ -4773,7 +4773,7 @@ python malware_yara_rules.py
 ./vol.py -f file.dmp yarascan.YaraScan --yara-file /tmp/malware_rules.yar
 ```
 
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Forensic Methodology**
 
@@ -4813,9 +4813,9 @@ python malware_yara_rules.py
 volatility --profile=Win7SP1x86_23418 yarascan -y malware_rules.yar -f ch2.dmp | grep "Rule:" | grep -v "Str_Win32" | sort | uniq
 ```
 
-### 其他
+#### 其他
 
-#### 外部插件
+**外部插件**
 
 如果要使用外部插件，请确保与插件相关的文件夹是第一个参数使用的内容。
 
@@ -4823,7 +4823,7 @@ volatility --profile=Win7SP1x86_23418 yarascan -y malware_rules.yar -f ch2.dmp |
 ./vol.py --plugin-dirs "/tmp/plugins/" [...]
 ```
 
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Memory Analysis**
 
@@ -5315,7 +5315,7 @@ volatility --profile=Win7SP1x86_23418 -f file.dmp linux_bash
 {% endtab %}
 
 {% tab title="vol2" %}
-#### Volatility Cheat Sheet
+**Volatility Cheat Sheet**
 
 **Basic Commands**
 

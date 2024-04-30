@@ -3,8 +3,6 @@
 ## 👾 Welcome!
 
 * [HackTricks](README.md)
-* [HackTricks Values & FAQ](welcome/hacktricks-values-and-faq.md)
-* [About the author](welcome/about-the-author.md)
 
 ## 🤩 Generic Methodologies & Resources
 
@@ -736,14 +734,14 @@
   * [Stack Canaries](binary-exploitation/common-binary-protections-and-bypasses/stack-canaries/README.md)
     * [BF Forked & Threaded Stack Canaries](binary-exploitation/common-binary-protections-and-bypasses/stack-canaries/bf-forked-stack-canaries.md)
     * [Print Stack Canary](binary-exploitation/common-binary-protections-and-bypasses/stack-canaries/print-stack-canary.md)
-* [Write What Where 2 Exec](binary-exploitation/arbitrary-write-2-exec/README.md)
+* [Write What Where 2 Exec](binary-exploitation/write-what-where-2-exec/README.md)
   * [WWW2Exec - atexit()](binary-exploitation/arbitrary-write-2-exec/www2exec-atexit.md)
   * [WWW2Exec - .dtors & .fini\_array](binary-exploitation/arbitrary-write-2-exec/www2exec-.dtors-and-.fini\_array.md)
   * [WWW2Exec - GOT/PLT](binary-exploitation/arbitrary-write-2-exec/aw2exec-got-plt.md)
   * [WWW2Exec - \_\_malloc\_hook](binary-exploitation/arbitrary-write-2-exec/aw2exec-\_\_malloc\_hook.md)
 * [Common Exploiting Problems](binary-exploitation/common-exploiting-problems.md)
 * [Windows Exploiting (Basic Guide - OSCP lvl)](binary-exploitation/windows-exploiting-basic-guide-oscp-lvl.md)
-* [Linux Exploiting (Basic) (SPA)](binary-exploitation/linux-exploiting-basic-esp.md)
+* [Linux Exploiting (Basic) (SPA)](binary-exploitation/linux-exploiting-basic-spa.md)
 
 ## 🔩 Reversing
 
